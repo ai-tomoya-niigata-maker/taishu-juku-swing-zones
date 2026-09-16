@@ -103,11 +103,11 @@
       <div class="band" style="background:#f6c90e"></div>
       <div class="figwrap"><svg id="svgP" viewBox="0 0 440 420"></svg><img class="wm" src="logo-text.png" alt="体修塾BCA"></div>
       <div class="pctrl">
-        <button data-deg="20">アンダーローテーション（20°）</button>
+        <button data-deg="20">LURP（20°）</button>
         <button data-deg="45">45°</button>
         <button data-deg="70" class="on">70°</button>
         <button data-deg="90">90°</button>
-        <button data-deg="115">回しすぎ（115°）</button>
+        <button data-deg="115">オーバーローテーション（115°）</button>
       </div>
       <p class="where" id="wP"></p>
     </div>
@@ -316,10 +316,10 @@
       const l=pt(d,R+34);txt(l.x,l.y+4,d+'°',{'text-anchor':'middle','font-size':12,'font-weight':700,fill:'#f8fafc'},svg);});
     // 範囲ラベル
     let l=pt(67,R+52);txt(l.x,l.y,'条件を満たす範囲',{'text-anchor':'middle','font-size':11,'font-weight':700,fill:'#f6c90e'},svg);
-    txt(362,C.y-40,'アンダー',{'text-anchor':'middle','font-size':11,'font-weight':700,fill:'#7dd3fc'},svg);
-    txt(362,C.y-25,'ローテーション',{'text-anchor':'middle','font-size':11,'font-weight':700,fill:'#7dd3fc'},svg);
-    txt(362,C.y-10,'（回転不足）',{'text-anchor':'middle','font-size':11,fill:'#7dd3fc'},svg);
-    l=pt(112,R+30);txt(l.x-6,l.y+4,'回しすぎ',{'text-anchor':'end','font-size':11,fill:'#fc8181'},svg);
+    txt(362,C.y-40,'LURP',{'text-anchor':'middle','font-size':13,'font-weight':900,fill:'#7dd3fc'},svg);
+    txt(362,C.y-25,'ローワーアンダー',{'text-anchor':'middle','font-size':10,fill:'#7dd3fc'},svg);
+    txt(362,C.y-12,'ローテーションプレイヤー',{'text-anchor':'middle','font-size':10,fill:'#7dd3fc'},svg);
+    l=pt(112,R+30);txt(l.x-6,l.y+4,'オーバーローテーション',{'text-anchor':'end','font-size':11,'font-weight':700,fill:'#fc8181'},svg);
     // 足（固定・薄く）：踏み込み足=投手側(上)、軸足=捕手側(下)
     el('rect',{x:C.x-10,y:C.y-92,width:20,height:34,rx:8,fill:'#1e293b',stroke:'#94a3b8','stroke-width':1,opacity:.7},svg);
     el('rect',{x:C.x-10,y:C.y+58,width:20,height:34,rx:8,fill:'#1e293b',stroke:'#94a3b8','stroke-width':1,opacity:.7},svg);
@@ -339,9 +339,9 @@
     const wP=document.getElementById('wP');
     let cur=0, target=70, raf2=null;
     function verdict(d){
-      if(d<45) return `骨盤は <b>${Math.round(d)}°</b>。45°に届いていません。体修塾ではこれを<b>アンダーローテーション（回転不足）</b>と呼びます。回そうとして届いていないなら教える対象、意図して回さない設計なら体修塾の概念の外です。`;
-      if(d<=90) return `骨盤は <b>${Math.round(d)}°</b>。条件を満たしています。この範囲の中なら、どの角度でも正解です。`;
-      return `骨盤は <b>${Math.round(d)}°</b>。90°を越えています。回りすぎると体が投手に正対し、前面でボールを捉える形が崩れます。`;
+      if(d<45) return `骨盤は <b>${Math.round(d)}°</b>。45°に届いていません。体修塾ではこの打者を<b>ローワーアンダーローテーションプレイヤー（LURP、回転不足）</b>と呼びます。回そうとして届いていないなら教える対象、意図して回さない設計なら体修塾の概念の外です。`;
+      if(d<=90) return `骨盤は <b>${Math.round(d)}°</b>。条件を満たしています。<b>ローワーローテーションプレイヤー（LRP）</b>。この範囲の中なら、どの角度でも正解です。`;
+      return `骨盤は <b>${Math.round(d)}°</b>。90°を越えています。<b>オーバーローテーション</b>です。回りすぎると体が投手に正対し、前面でボールを捉える形が崩れます。`;
     }
     function draw(){
       g.setAttribute('transform',`rotate(${-cur} ${C.x} ${C.y})`);
