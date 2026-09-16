@@ -45,6 +45,9 @@
   body.only-stance .wrap>.label, body.only-stance .wrap>h1, body.only-stance .wrap>.lead, body.only-stance .grid, body.only-stance .ctrl, body.only-stance .legend, body.only-stance .wrap>.note, body.only-stance #pelvis{display:none}
   body.only-stance #stance{margin-top:0;padding-top:24px;border-top:none}
   body.only-stance .slider{display:none}
+  body.only-upper .wrap>.label, body.only-upper .wrap>h1, body.only-upper .wrap>.lead, body.only-upper .grid, body.only-upper .ctrl, body.only-upper .legend, body.only-upper .wrap>.note, body.only-upper #pelvis, body.only-upper #stance{display:none}
+  body.only-upper #upper{margin-top:0;padding-top:24px;border-top:none}
+  body.only-upper #phaseBtns, body.only-upper #viewBtns{display:none}
   .sig{text-align:center;font-size:11px;color:var(--gray);margin-top:36px;line-height:1.9}
   .sig b{color:var(--white)}
 </style>
@@ -123,9 +126,39 @@
     <p class="note">どちらの立ち位置でも、回り切ったときベースはトップハンド側に来て、ボールは前面の引きつけたポイントで捉えます。変わるのは、そこに至るために必要な骨盤の角度だけです。角度を直す前に、立ち位置を疑ってください。</p>
   </div>
 
+  <div class="sec" id="upper">
+    <p class="label">UPPER BODY &amp; BAT</p>
+    <h1>上半身とバットの関係。</h1>
+    <p class="lead">構えでグリップの上にあったヘッドが、スイングバックで肩のラインまで落ち、スイングアウトで両肩のラインの延長線上に並び、スイングフロントでおへその前まで来る。ドラッグで視点を回せます。</p>
+    <div class="card one" style="max-width:640px">
+      <div class="band" style="background:#f6c90e"></div>
+      <div id="three-wrap" style="position:relative;width:100%;aspect-ratio:4/3;background:#0a0e1a;cursor:grab">
+        <canvas id="cv3d" style="width:100%;height:100%;display:block"></canvas>
+        <div id="phaseTag" style="position:absolute;left:14px;top:12px;font-size:12px;letter-spacing:.2em;color:#f6c90e;font-weight:700"></div>
+        <div id="phaseName" style="position:absolute;left:14px;top:30px;font-size:20px;font-weight:900;color:#f8fafc"></div>
+      </div>
+      <div class="pctrl" id="phaseBtns">
+        <button data-ph="0">構え</button>
+        <button data-ph="1">スイングバック</button>
+        <button data-ph="2">スイングアウト</button>
+        <button data-ph="3">スイングフロント</button>
+        <button data-ph="play" class="on">▶ 通しで再生</button>
+      </div>
+      <div class="pctrl" id="viewBtns" style="margin-top:6px">
+        <button data-v="pitcher">投手から</button>
+        <button data-v="top">真上から</button>
+        <button data-v="side">横から</button>
+        <button data-v="iso" class="on">斜めから</button>
+      </div>
+      <p class="where" id="w3d"></p>
+    </div>
+    <p class="note">金の線はおへそから前へ引いた「へそライン」。白い破線は両肩のラインの延長。バットは、この2本との関係で局面が決まります。</p>
+  </div>
+
   <div class="sig"><b>体修塾BCA｜新潟県・柏崎の野球個別指導スクール</b><br>代表 大林智也｜日体大 体育学 ／ 上越教育大学院 スポーツ心理学修士<br>📍 新潟県柏崎市｜新潟県全域・出張指導対応</div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (function(){
   const NS='http://www.w3.org/2000/svg';
@@ -379,6 +412,135 @@
       const id=setInterval(()=>{v+=dir*1.2; if(v>=100){v=100;dir=-1;} if(dir<0&&v<=50){v=50;clearInterval(id);} rng.value=v; draw(v);},30);
       rng.addEventListener('input',()=>clearInterval(id),{once:true});
     }
+  })();
+
+  // ===== 3D：上半身とバット =====
+  (function(){
+    const cv=document.getElementById('cv3d'); if(!cv||!window.THREE) return;
+    if(/[?&]fig=upper/.test(location.search)) document.body.classList.add('only-upper');
+    const T=THREE;
+    const renderer=new T.WebGLRenderer({canvas:cv,antialias:true,alpha:false,preserveDrawingBuffer:true});
+    renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+    const scene=new T.Scene(); scene.background=new T.Color(0x0a0e1a);
+    const cam=new T.PerspectiveCamera(38,4/3,0.1,100);
+    scene.add(new T.AmbientLight(0xffffff,0.55));
+    const key=new T.DirectionalLight(0xffffff,0.9); key.position.set(3,6,4); scene.add(key);
+    const rim=new T.DirectionalLight(0xf6c90e,0.35); rim.position.set(-4,3,-3); scene.add(rim);
+
+    const GOLD=0xf6c90e, WHITE=0xf8fafc, GRAY=0x94a3b8, NAVY=0x1e293b, BLUE=0x7dd3fc, RED=0xfc8181;
+    const mat=(c,o)=>new T.MeshStandardMaterial({color:c,roughness:.6,metalness:.1,transparent:o!==undefined,opacity:o===undefined?1:o});
+
+    // 床（打席）：前面=+z 側、後面=-z 側（体は +z を向く）。トップハンド側=+x
+    const floor=new T.Mesh(new T.PlaneGeometry(4,4),mat(0x111827,.9)); floor.rotation.x=-Math.PI/2; scene.add(floor);
+    const grid=new T.GridHelper(4,8,0x1e3a5f,0x1e3a5f); grid.position.y=0.001; scene.add(grid);
+    // 前面（+z）にベース
+    const plateShape=new T.Shape(); plateShape.moveTo(-.22,.22); plateShape.lineTo(.22,.22); plateShape.lineTo(.22,0); plateShape.lineTo(0,-.2); plateShape.lineTo(-.22,0); plateShape.closePath();
+    const plate=new T.Mesh(new T.ShapeGeometry(plateShape),mat(0xe2e8f0)); plate.rotation.x=-Math.PI/2; plate.position.set(0.55,0.004,1.15); scene.add(plate);
+
+    // 体：骨盤・胴・肩・頭（骨盤は 45° 回った状態＝体全体を y 軸で回して表現）
+    const body=new T.Group(); scene.add(body);
+    const pelvis=new T.Mesh(new T.SphereGeometry(0.22,24,16),mat(NAVY)); pelvis.scale.set(1.35,0.55,0.8); pelvis.position.y=1.0; body.add(pelvis);
+    const torso=new T.Mesh(new T.CylinderGeometry(0.2,0.22,0.55,24),mat(NAVY,.85)); torso.position.y=1.35; body.add(torso);
+    const shoulders=new T.Mesh(new T.CylinderGeometry(0.045,0.045,0.82,16),mat(WHITE)); shoulders.rotation.z=Math.PI/2; shoulders.position.y=1.62; body.add(shoulders);
+    const shL=new T.Mesh(new T.SphereGeometry(0.07,16,12),mat(WHITE)); shL.position.set(-0.41,1.62,0); body.add(shL);
+    const shR=new T.Mesh(new T.SphereGeometry(0.07,16,12),mat(WHITE)); shR.position.set(0.41,1.62,0); body.add(shR);
+    const head=new T.Mesh(new T.SphereGeometry(0.15,20,16),mat(NAVY)); head.position.y=1.9; body.add(head);
+    // おへそ（前面側）
+    const navel=new T.Mesh(new T.SphereGeometry(0.04,12,10),mat(GOLD)); navel.position.set(0,1.05,0.19); body.add(navel);
+    // へそライン（おへそから前へ）＋ 面（トップ／ボトムの境界）
+    const nl=new T.Line(new T.BufferGeometry().setFromPoints([new T.Vector3(0,1.05,0.19),new T.Vector3(0,1.05,1.6)]),new T.LineDashedMaterial({color:GOLD,dashSize:.08,gapSize:.05})); nl.computeLineDistances(); body.add(nl);
+    const plane=new T.Mesh(new T.PlaneGeometry(1.5,1.3),new T.MeshBasicMaterial({color:GOLD,transparent:true,opacity:.07,side:T.DoubleSide})); plane.rotation.y=Math.PI/2; plane.position.set(0,1.15,0.9); body.add(plane);
+    // 肩ラインの延長（白破線）
+    const sl=new T.Line(new T.BufferGeometry().setFromPoints([new T.Vector3(-1.2,1.62,0),new T.Vector3(1.6,1.62,0)]),new T.LineDashedMaterial({color:WHITE,dashSize:.06,gapSize:.06,transparent:true,opacity:.5})); sl.computeLineDistances(); body.add(sl);
+    // ラベル用スプライト
+    function label(text,color,pos,scale){const c=document.createElement('canvas');c.width=256;c.height=64;const x=c.getContext('2d');x.font='bold 30px sans-serif';x.fillStyle=color;x.textAlign='center';x.fillText(text,128,42);const t=new T.CanvasTexture(c);const sp=new T.Sprite(new T.SpriteMaterial({map:t,transparent:true}));sp.scale.set(scale||.6,(scale||.6)/4,1);sp.position.copy(pos);return sp;}
+    body.add(label('へそライン','#f6c90e',new T.Vector3(0,1.16,1.55),.7));
+    body.add(label('肩ラインの延長','#f8fafc',new T.Vector3(1.35,1.72,0),.8));
+    body.add(label('トップハンド側','#7dd3fc',new T.Vector3(0.75,0.35,0.9),.8));
+    body.add(label('ボトムハンド側','#fc8181',new T.Vector3(-0.75,0.35,0.9),.8));
+    scene.add(label('前面（ベース側）','#f6c90e',new T.Vector3(0.55,0.08,1.55),.9));
+    // 体全体を「完全着地後・骨盤が向いた状態」に：ここでは体の向き＝前面方向で固定し、打席の線は体の向きと同じに置く（視覚を単純化）
+
+    // 腕（肩→グリップ）とバット
+    const armMat=new T.LineBasicMaterial({color:GRAY});
+    const armL=new T.Line(new T.BufferGeometry().setFromPoints([new T.Vector3(),new T.Vector3()]),armMat); scene.add(armL);
+    const armR=new T.Line(new T.BufferGeometry().setFromPoints([new T.Vector3(),new T.Vector3()]),armMat); scene.add(armR);
+    const BATLEN=0.85;
+    const bat=new T.Mesh(new T.CylinderGeometry(0.035,0.016,BATLEN,16),mat(WHITE)); scene.add(bat);
+    const headBall=new T.Mesh(new T.SphereGeometry(0.05,14,12),mat(GOLD)); scene.add(headBall);
+    const gripBall=new T.Mesh(new T.SphereGeometry(0.035,14,12),mat(BLUE)); scene.add(gripBall);
+    // ヘッドの軌跡
+    const trailPts=[]; const trail=new T.Line(new T.BufferGeometry(),new T.LineBasicMaterial({color:GOLD,transparent:true,opacity:.7})); scene.add(trail);
+
+    // 局面キーフレーム：[グリップ, ヘッド方向(単位ベクトルに近い)]  体の向き=+z、トップハンド側=+x、上=+y
+    const K=[
+      {name:'構え',tag:'PHASE 0',grip:new T.Vector3(0.30,1.40,-0.05),dir:new T.Vector3(0.25,1,-0.35),
+       text:'ヘッドはグリップの<b>上</b>にあります。バットは立っていて、まだどの線とも関係を持っていません。'},
+      {name:'スイングバック',tag:'PHASE 1',grip:new T.Vector3(0.36,1.50,-0.18),dir:new T.Vector3(0.75,0.05,-0.65),
+       text:'ヘッドが<b>肩のラインの高さまで落ちます</b>。トップハンド後面で溜める局面。ヘッドはへそラインの<b>トップハンド側</b>にあります。'},
+      {name:'スイングアウト',tag:'PHASE 2',grip:new T.Vector3(0.36,1.42,0.05),dir:new T.Vector3(1,0,0),
+       text:'バットが<b>両肩のラインの延長線上に、平行に並びます</b>。ヘッドは肩の外へ。ここが練習での理想のインパクト位置です。'},
+      {name:'スイングフロント',tag:'PHASE 3',grip:new T.Vector3(0.12,1.15,0.30),dir:new T.Vector3(0.55,-0.15,0.85),
+       text:'ヘッドが肩ラインから<b>おへその前</b>まで来ます。前面でボールを捉える局面。ヘッドはまだへそラインの<b>トップハンド側</b>です。ここを越えるのはフォローだけ。'},
+    ];
+    K.forEach(k=>k.dir.normalize());
+    let cur={grip:K[0].grip.clone(),dir:K[0].dir.clone()};
+    function place(grip,dir){
+      const headP=grip.clone().add(dir.clone().multiplyScalar(BATLEN));
+      bat.position.copy(grip.clone().add(dir.clone().multiplyScalar(BATLEN/2)));
+      bat.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),dir.clone().normalize());
+      headBall.position.copy(headP); gripBall.position.copy(grip);
+      armL.geometry.setFromPoints([new T.Vector3(-0.41,1.62,0),grip]); armR.geometry.setFromPoints([new T.Vector3(0.41,1.62,0),grip]);
+      return headP;
+    }
+    const tag=document.getElementById('phaseTag'), nm=document.getElementById('phaseName'), w3=document.getElementById('w3d');
+    function setText(i){tag.textContent=K[i].tag; nm.textContent=K[i].name; w3.innerHTML=K[i].text;
+      document.querySelectorAll('#phaseBtns button').forEach(b=>b.classList.toggle('on',b.dataset.ph==String(i)));}
+    // アニメーション
+    let anim=null;
+    function lerpV(a,b,t){return a.clone().lerp(b,t);}
+    function ease(t){return t<.5?2*t*t:-1+(4-2*t)*t;}
+    function goTo(i,dur){
+      const from={grip:cur.grip.clone(),dir:cur.dir.clone()}, to=K[i]; const t0=performance.now();
+      return new Promise(res=>{
+        function step(){const t=Math.min(1,(performance.now()-t0)/dur), e=ease(t);
+          cur.grip=lerpV(from.grip,to.grip,e); cur.dir=lerpV(from.dir,to.dir,e).normalize();
+          const hp=place(cur.grip,cur.dir); trailPts.push(hp.clone()); if(trailPts.length>400) trailPts.shift(); trail.geometry.setFromPoints(trailPts);
+          if(t<1) anim=requestAnimationFrame(step); else res();}
+        anim=requestAnimationFrame(step);
+      });
+    }
+    async function playAll(){ if(anim) cancelAnimationFrame(anim); trailPts.length=0; cur={grip:K[0].grip.clone(),dir:K[0].dir.clone()}; place(cur.grip,cur.dir); setText(0);
+      document.querySelectorAll('#phaseBtns button').forEach(b=>b.classList.toggle('on',b.dataset.ph==='play'));
+      await new Promise(r=>setTimeout(r,500));
+      for(let i=1;i<K.length;i++){ setText(i); await goTo(i,900); await new Promise(r=>setTimeout(r,650)); } }
+    document.querySelectorAll('#phaseBtns button').forEach(b=>b.addEventListener('click',()=>{ if(anim) cancelAnimationFrame(anim);
+      if(b.dataset.ph==='play'){playAll();return;} const i=+b.dataset.ph; trailPts.length=0; setText(i); goTo(i,700); }));
+
+    // カメラ（簡易オービット）
+    let theta=0.85, phi=1.05, dist=4.2, target=new T.Vector3(0.15,1.15,0.35);
+    function updCam(){cam.position.set(target.x+dist*Math.sin(phi)*Math.sin(theta), target.y+dist*Math.cos(phi), target.z+dist*Math.sin(phi)*Math.cos(theta)); cam.lookAt(target);}
+    const VIEWS={pitcher:[0.0,1.25],top:[0.0,0.08],side:[Math.PI/2,1.3],iso:[0.85,1.05]};
+    document.querySelectorAll('#viewBtns button').forEach(b=>b.addEventListener('click',()=>{const v=VIEWS[b.dataset.v]; theta=v[0]; phi=v[1]; updCam();
+      document.querySelectorAll('#viewBtns button').forEach(x=>x.classList.toggle('on',x===b));}));
+    let drag=false,lx=0,ly=0;
+    const wrap=document.getElementById('three-wrap');
+    wrap.addEventListener('pointerdown',e=>{drag=true;lx=e.clientX;ly=e.clientY;wrap.style.cursor='grabbing';});
+    window.addEventListener('pointerup',()=>{drag=false;wrap.style.cursor='grab';});
+    window.addEventListener('pointermove',e=>{if(!drag)return; theta-=(e.clientX-lx)*0.008; phi=Math.max(0.08,Math.min(1.5,phi+(e.clientY-ly)*0.006)); lx=e.clientX;ly=e.clientY; updCam();});
+    wrap.addEventListener('touchmove',e=>{e.preventDefault();},{passive:false});
+
+    function resize(){const w=wrap.clientWidth,h=wrap.clientHeight; renderer.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix();}
+    window.addEventListener('resize',resize); resize(); updCam();
+    (function loop(){renderer.render(scene,cam); requestAnimationFrame(loop);})();
+
+    const still=/[?&]still=1/.test(location.search);
+    place(cur.grip,cur.dir); setText(0);
+    if(still){ // 静止画：スイングアウトの状態＋軌跡
+      const pts=[]; for(let i=0;i<=1;i+=0.05){pts.push(cur.grip.clone().lerp(K[1].grip,i).add(cur.dir.clone().lerp(K[1].dir,i).normalize().multiplyScalar(BATLEN)));}
+      for(let i=0;i<=1;i+=0.05){pts.push(K[1].grip.clone().lerp(K[2].grip,i).add(K[1].dir.clone().lerp(K[2].dir,i).normalize().multiplyScalar(BATLEN)));}
+      trail.geometry.setFromPoints(pts); cur={grip:K[2].grip.clone(),dir:K[2].dir.clone()}; place(cur.grip,cur.dir); setText(2);
+    } else { setTimeout(playAll,800); }
   })();
 
   // ?still=1 なら最終状態を静止画として描く（プレビュー画像用）
