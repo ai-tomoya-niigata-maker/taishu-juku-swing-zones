@@ -40,6 +40,11 @@
   body.only-pelvis .wrap>.label, body.only-pelvis .wrap>h1, body.only-pelvis .wrap>.lead, body.only-pelvis .grid, body.only-pelvis .ctrl, body.only-pelvis .legend, body.only-pelvis .wrap>.note{display:none}
   body.only-pelvis .sec{margin-top:0;padding-top:24px;border-top:none}
   body.only-pelvis .pctrl{display:none}
+  .slider{display:flex;align-items:center;gap:10px;margin:6px 16px 0;font-size:11px;color:var(--gray)}
+  .slider input{flex:1;accent-color:#f6c90e}
+  body.only-stance .wrap>.label, body.only-stance .wrap>h1, body.only-stance .wrap>.lead, body.only-stance .grid, body.only-stance .ctrl, body.only-stance .legend, body.only-stance .wrap>.note, body.only-stance #pelvis{display:none}
+  body.only-stance #stance{margin-top:0;padding-top:24px;border-top:none}
+  body.only-stance .slider{display:none}
   .sig{text-align:center;font-size:11px;color:var(--gray);margin-top:36px;line-height:1.9}
   .sig b{color:var(--white)}
 </style>
@@ -99,6 +104,23 @@
       <p class="where" id="wP"></p>
     </div>
     <p class="note">45〜90°は「最後は90°まで回せ」という目標ではなく、許容範囲です。この中のどこで打つかは、選手の体と立ち位置で決まります。</p>
+  </div>
+
+  <div class="sec" id="stance">
+    <p class="label">STANCE &amp; ANGLE</p>
+    <h1>立ち位置が、角度を決める。</h1>
+    <p class="lead">45〜90°の中のどこで打つかは、選手が「決める」のではなく、立ち位置で「決まる」もの。ベースに近く立てば90°に近づき、離れて立てば45°に近づきます。スライダーで立ち位置を動かしてみてください。</p>
+    <div class="card one">
+      <div class="band" style="background:#f6c90e"></div>
+      <svg id="svgS" viewBox="0 0 440 420"></svg>
+      <div class="slider">
+        <span>ベースに近い</span>
+        <input type="range" id="rngS" min="0" max="100" value="50">
+        <span>ベースから離れる</span>
+      </div>
+      <p class="where" id="wS"></p>
+    </div>
+    <p class="note">どちらの立ち位置でも、回り切ったときベースはトップハンド側に来て、ボールは前面の引きつけたポイントで捉えます。変わるのは、そこに至るために必要な骨盤の角度だけです。角度を直す前に、立ち位置を疑ってください。</p>
   </div>
 
   <div class="sig"><b>体修塾BCA｜新潟県・柏崎の野球個別指導スクール</b><br>代表 大林智也｜日体大 体育学 ／ 上越教育大学院 スポーツ心理学修士<br>📍 新潟県柏崎市｜新潟県全域・出張指導対応</div>
@@ -298,6 +320,68 @@
     if(/[?&]fig=pelvis/.test(location.search)) document.body.classList.add('only-pelvis');
     if(still){cur=70;target=70;draw();}
     else{draw(); setTimeout(()=>go(70),900);}
+  })();
+
+  // ===== 立ち位置と角度の図 =====
+  (function(){
+    const svg=document.getElementById('svgS'); if(!svg) return;
+    if(/[?&]fig=stance/.test(location.search)) document.body.classList.add('only-stance');
+    // ベース（固定・右）
+    const PL={x:330,y:230};
+    el('path',{d:`M${PL.x-20} ${PL.y-20} L${PL.x+20} ${PL.y-20} L${PL.x+20} ${PL.y+8} L${PL.x} ${PL.y+26} L${PL.x-20} ${PL.y+8} Z`,fill:'#1e293b',stroke:'#e2e8f0','stroke-width':1.5},svg);
+    txt(PL.x,PL.y+44,'ベース',{'text-anchor':'middle','font-size':10,fill:'#94a3b8'},svg);
+    txt(220,24,'▲ 投手方向',{'text-anchor':'middle','font-size':11,fill:'#94a3b8'},svg);
+    txt(220,412,'▼ 捕手方向',{'text-anchor':'middle','font-size':11,fill:'#94a3b8'},svg);
+    // ボール（引きつけたポイント＝ベース上のやや捕手寄り）
+    const BALL={x:PL.x-4,y:PL.y+4};
+    // 距離の目盛（近い〜離れる）
+    el('line',{x1:120,y1:392,x2:260,y2:392,stroke:'#1e3a5f','stroke-width':1},svg);
+    // 打者グループ（x が動く）
+    const g=el('g',{},svg);
+    const ell=el('ellipse',{cx:0,cy:0,rx:22,ry:40,fill:'#111827',stroke:'#f8fafc','stroke-width':3},g);
+    const arrow=el('line',{x1:0,y1:0,x2:70,y2:0,stroke:'#f6c90e','stroke-width':4,'stroke-linecap':'round','marker-end':'url(#arrowP)'},g);
+    const navel=el('circle',{cx:22,cy:0,r:5,fill:'#f6c90e'},g);
+    // へそライン（骨盤と一緒に回る・薄い破線）
+    const nline=el('line',{x1:-140,y1:0,x2:160,y2:0,stroke:'#f6c90e','stroke-width':1,'stroke-dasharray':'5 4',opacity:.45},g);
+    // バット（手→ボール）
+    const bat=el('line',{x1:0,y1:0,x2:0,y2:0,stroke:'#f8fafc','stroke-width':5,'stroke-linecap':'round'},svg);
+    const ball=el('circle',{cx:BALL.x,cy:BALL.y,r:6,fill:'#f8fafc',stroke:'#f6c90e','stroke-width':2},svg);
+    // 角度表示・距離表示
+    const degT=txt(60,60,'',{'text-anchor':'start','font-size':34,'font-weight':900,fill:'#f6c90e'},svg);
+    const degL=txt(60,80,'骨盤の角度',{'text-anchor':'start','font-size':11,fill:'#94a3b8'},svg);
+    const dT=txt(60,120,'',{'text-anchor':'start','font-size':13,'font-weight':700,fill:'#f8fafc'},svg);
+    // 扇（0-45 青 / 45-90 金）を打者中心に描く（薄く）
+    const sec1=el('path',{fill:'rgba(125,211,252,.10)',stroke:'#7dd3fc','stroke-width':1,'stroke-opacity':.4},svg);
+    const sec2=el('path',{fill:'rgba(246,201,14,.16)',stroke:'#f6c90e','stroke-width':1,'stroke-opacity':.6},svg);
+    const wS=document.getElementById('wS'), rng=document.getElementById('rngS');
+    function sectorPath(cx,cy,d0,d1,r){const a={x:cx+r*Math.cos(-d0*Math.PI/180),y:cy+r*Math.sin(-d0*Math.PI/180)},b={x:cx+r*Math.cos(-d1*Math.PI/180),y:cy+r*Math.sin(-d1*Math.PI/180)};return `M${cx} ${cy} L${a.x} ${a.y} A${r} ${r} 0 0 0 ${b.x} ${b.y} Z`;}
+    function draw(v){ // v: 0(近い)〜100(離れる)
+      const t=v/100;
+      const cx=PL.x-70-t*120, cy=PL.y+20;        // 打者の中心：近い=ベース脇 / 離れる=左へ
+      const deg=90-45*t;                          // 近い→90° / 離れる→45°
+      g.setAttribute('transform',`translate(${cx} ${cy}) rotate(${-deg})`);
+      // 手の位置：骨盤中心から腹側へ少し出た点（回転後）
+      const r=-deg*Math.PI/180; const hx=cx+18*Math.cos(r), hy=cy+18*Math.sin(r);
+      bat.setAttribute('x1',hx);bat.setAttribute('y1',hy);bat.setAttribute('x2',BALL.x);bat.setAttribute('y2',BALL.y);
+      sec1.setAttribute('d',sectorPath(cx,cy,0,45,95)); sec2.setAttribute('d',sectorPath(cx,cy,45,90,95));
+      degT.textContent=Math.round(deg)+'°';
+      const dist=Math.round(45+t*45); // 目安cm
+      dT.textContent='ベースとの距離：目安 '+dist+'cm';
+      wS.innerHTML = t<0.33
+        ? `ベースに<b>近く</b>立っています。ベースをトップハンド側に持っていくには深く回る必要があり、骨盤は<b>${Math.round(deg)}°</b>まで向きます。`
+        : (t<0.67
+          ? `中間の立ち位置です。骨盤は<b>${Math.round(deg)}°</b>。この角度を、どのコースでも毎回同じにします。`
+          : `ベースから<b>離れて</b>立っています。浅い回旋でもベースはトップハンド側に来るので、骨盤は<b>${Math.round(deg)}°</b>で足ります。`);
+    }
+    rng.addEventListener('input',()=>draw(+rng.value));
+    const still=/[?&]still=1/.test(location.search);
+    if(still){draw(50);}
+    else{
+      // 最初は 近い→離れる→中間 とデモ
+      let v=0,dir=1,frames=0; draw(0);
+      const id=setInterval(()=>{v+=dir*1.2; if(v>=100){v=100;dir=-1;} if(dir<0&&v<=50){v=50;clearInterval(id);} rng.value=v; draw(v);},30);
+      rng.addEventListener('input',()=>clearInterval(id),{once:true});
+    }
   })();
 
   // ?still=1 なら最終状態を静止画として描く（プレビュー画像用）
