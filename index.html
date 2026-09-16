@@ -349,7 +349,6 @@
     // 角度表示・距離表示
     const degT=txt(60,60,'',{'text-anchor':'start','font-size':34,'font-weight':900,fill:'#f6c90e'},svg);
     const degL=txt(60,80,'骨盤の角度',{'text-anchor':'start','font-size':11,fill:'#94a3b8'},svg);
-    const dT=txt(60,120,'',{'text-anchor':'start','font-size':13,'font-weight':700,fill:'#f8fafc'},svg);
     // 扇（0-45 青 / 45-90 金）を打者中心に描く（薄く）
     const sec1=el('path',{fill:'rgba(125,211,252,.10)',stroke:'#7dd3fc','stroke-width':1,'stroke-opacity':.4},svg);
     const sec2=el('path',{fill:'rgba(246,201,14,.16)',stroke:'#f6c90e','stroke-width':1,'stroke-opacity':.6},svg);
@@ -365,8 +364,6 @@
       bat.setAttribute('x1',hx);bat.setAttribute('y1',hy);bat.setAttribute('x2',BALL.x);bat.setAttribute('y2',BALL.y);
       sec1.setAttribute('d',sectorPath(cx,cy,0,45,95)); sec2.setAttribute('d',sectorPath(cx,cy,45,90,95));
       degT.textContent=Math.round(deg)+'°';
-      const dist=Math.round(45+t*45); // 目安cm
-      dT.textContent='ベースとの距離：目安 '+dist+'cm';
       wS.innerHTML = t<0.33
         ? `ベースに<b>近く</b>立っています。ベースをトップハンド側に持っていくには深く回る必要があり、骨盤は<b>${Math.round(deg)}°</b>まで向きます。`
         : (t<0.67
