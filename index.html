@@ -39,15 +39,15 @@
   .pctrl button.on{border-color:var(--gold);color:var(--gold)}
   body.only-pelvis .wrap>.label, body.only-pelvis .wrap>h1, body.only-pelvis .wrap>.lead, body.only-pelvis .grid, body.only-pelvis .ctrl, body.only-pelvis .legend, body.only-pelvis .wrap>.note{display:none}
   body.only-pelvis .sec{margin-top:0;padding-top:24px;border-top:none}
-  body.only-pelvis .pctrl{display:none}
+  body.only-pelvis.still .pctrl{display:none}
   .slider{display:flex;align-items:center;gap:10px;margin:6px 16px 0;font-size:11px;color:var(--gray)}
   .slider input{flex:1;accent-color:#f6c90e}
   body.only-stance .wrap>.label, body.only-stance .wrap>h1, body.only-stance .wrap>.lead, body.only-stance .grid, body.only-stance .ctrl, body.only-stance .legend, body.only-stance .wrap>.note, body.only-stance #pelvis{display:none}
   body.only-stance #stance{margin-top:0;padding-top:24px;border-top:none}
-  body.only-stance .slider{display:none}
+  body.only-stance.still .slider{display:none}
   body.only-upper .wrap>.label, body.only-upper .wrap>h1, body.only-upper .wrap>.lead, body.only-upper .grid, body.only-upper .ctrl, body.only-upper .legend, body.only-upper .wrap>.note, body.only-upper #pelvis, body.only-upper #stance{display:none}
   body.only-upper #upper{margin-top:0;padding-top:24px;border-top:none}
-  body.only-upper #phaseBtns, body.only-upper #viewBtns{display:none}
+  body.only-upper.still #phaseBtns, body.only-upper.still #viewBtns{display:none}
   .sig{text-align:center;font-size:11px;color:var(--gray);margin-top:36px;line-height:1.9}
   .sig b{color:var(--white)}
 </style>
@@ -161,6 +161,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (function(){
+  if(/[?&]still=1/.test(location.search)) document.body.classList.add('still');
   const NS='http://www.w3.org/2000/svg';
   const W=440,H=400;
   // 打者の中心（手の位置＝バットの支点）
