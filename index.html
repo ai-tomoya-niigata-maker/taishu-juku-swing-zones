@@ -37,6 +37,9 @@
   .pctrl{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 16px 0}
   .pctrl button{background:#1e293b;color:var(--white);border:1px solid var(--line);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer}
   .pctrl button.on{border-color:var(--gold);color:var(--gold)}
+  body.only-pelvis .wrap>.label, body.only-pelvis .wrap>h1, body.only-pelvis .wrap>.lead, body.only-pelvis .grid, body.only-pelvis .ctrl, body.only-pelvis .legend, body.only-pelvis .wrap>.note{display:none}
+  body.only-pelvis .sec{margin-top:0;padding-top:24px;border-top:none}
+  body.only-pelvis .pctrl{display:none}
   .sig{text-align:center;font-size:11px;color:var(--gray);margin-top:36px;line-height:1.9}
   .sig b{color:var(--white)}
 </style>
@@ -291,9 +294,10 @@
     function go(d){target=d; if(!raf2) raf2=requestAnimationFrame(step);
       document.querySelectorAll('.pctrl button').forEach(b=>b.classList.toggle('on',+b.dataset.deg===d));}
     document.querySelectorAll('.pctrl button').forEach(b=>b.addEventListener('click',()=>go(+b.dataset.deg)));
-    draw();
-    // 最初は 0→70 のデモ
-    setTimeout(()=>go(70),900);
+    const still=/[?&]still=1/.test(location.search);
+    if(/[?&]fig=pelvis/.test(location.search)) document.body.classList.add('only-pelvis');
+    if(still){cur=70;target=70;draw();}
+    else{draw(); setTimeout(()=>go(70),900);}
   })();
 
   // ?still=1 なら最終状態を静止画として描く（プレビュー画像用）
