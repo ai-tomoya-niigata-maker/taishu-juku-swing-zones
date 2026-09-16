@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>打撃の本質｜前面・後面と、力を使う場所</title>
+<style>
+  :root{--bg:#0a0e1a;--card:#111827;--line:#1e3a5f;--gold:#f6c90e;--red:#fc8181;--blue:#7dd3fc;--white:#f8fafc;--gray:#94a3b8;--body:#e2e8f0}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--white);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif}
+  .wrap{max-width:980px;margin:0 auto;padding:32px 16px 48px}
+  .label{font-size:11px;letter-spacing:.3em;color:var(--gold);font-weight:700;text-align:center;margin:0 0 10px}
+  h1{font-size:24px;font-weight:900;text-align:center;margin:0 0 8px;line-height:1.4}
+  .lead{font-size:14px;color:var(--gray);text-align:center;line-height:1.8;max-width:560px;margin:0 auto 28px}
+  .grid{display:grid;grid-template-columns:1fr;gap:20px}
+  @media(min-width:760px){.grid{grid-template-columns:1fr 1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .band{height:4px}
+  .card h2{font-size:17px;font-weight:900;margin:18px 20px 4px}
+  .card .sub{font-size:12px;color:var(--gray);margin:0 20px 10px;line-height:1.7}
+  svg{display:block;width:100%;height:auto}
+  .gauge{margin:6px 20px 0}
+  .gauge .t{display:flex;justify-content:space-between;font-size:11px;color:var(--gray);margin-bottom:4px}
+  .gauge .bar{height:10px;border-radius:5px;background:#1e293b;position:relative;overflow:hidden}
+  .gauge .fill{height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,#64748b,#f6c90e,#ffffff);transition:width .05s linear}
+  .where{margin:10px 20px 18px;font-size:13px;line-height:1.7;color:var(--body);min-height:44px}
+  .where b{color:var(--gold)}
+  .ctrl{text-align:center;margin:22px 0 0}
+  .ctrl button{background:#1e293b;color:var(--white);border:1px solid var(--line);border-radius:8px;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer;margin:0 6px}
+  .ctrl button:hover{border-color:var(--gold)}
+  .legend{display:flex;flex-wrap:wrap;gap:10px 18px;justify-content:center;font-size:12px;color:var(--gray);margin:18px 0 0}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend i{display:inline-block;width:14px;height:14px;border-radius:3px}
+  .note{font-size:12px;color:var(--gray);line-height:1.8;text-align:center;margin:26px auto 0;max-width:600px}
+  .sig{text-align:center;font-size:11px;color:var(--gray);margin-top:36px;line-height:1.9}
+  .sig b{color:var(--white)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="label">THE ESSENCE OF HITTING</p>
+  <h1>スイングの力は、どこで使うのか。</h1>
+  <p class="lead">打席を真上から見ています（右打者）。線は構えた瞬間に固定され、体が動いても動きません。バットヘッドの明るさと太さが「いま出ている力」です（灰→金→白の順に強い）。</p>
+
+  <div class="grid">
+    <!-- 従来型 -->
+    <div class="card">
+      <div class="band" style="background:#e53e3e"></div>
+      <h2>従来型｜「最後まで振り切れ」</h2>
+      <p class="sub">ボールを捉えたあとも加速し、力のピークがボトムハンド後面（もうボールがいない場所）にある。</p>
+      <svg id="svgA" viewBox="0 0 440 400"></svg>
+      <div class="gauge"><div class="t"><span>ヘッドの勢い</span><span id="pkA"></span></div><div class="bar"><div class="fill" id="gA"></div></div></div>
+      <p class="where" id="wA"></p>
+    </div>
+    <!-- 体修塾流 -->
+    <div class="card">
+      <div class="band" style="background:#f6c90e"></div>
+      <h2>体修塾｜「前面で完結する」</h2>
+      <p class="sub">トップハンド後面で溜め、前面で力を出し切る。ボトムハンド後面へは惰性で抜けていくだけ。</p>
+      <svg id="svgB" viewBox="0 0 440 400"></svg>
+      <div class="gauge"><div class="t"><span>ヘッドの勢い</span><span id="pkB"></span></div><div class="bar"><div class="fill" id="gB"></div></div></div>
+      <p class="where" id="wB"></p>
+    </div>
+  </div>
+
+  <div class="ctrl">
+    <button id="btnPlay">もう一度</button>
+    <button id="btnSlow">ゆっくり</button>
+  </div>
+  <div class="legend">
+    <span><i style="background:rgba(125,211,252,.35);border:1px solid #7dd3fc"></i>トップハンド後面＝溜める</span>
+    <span><i style="background:rgba(246,201,14,.28);border:1px solid #f6c90e"></i>前面＝振る（ボールが通る）</span>
+    <span><i style="background:rgba(252,129,129,.28);border:1px solid #fc8181"></i>ボトムハンド後面＝抜ける</span>
+  </div>
+  <p class="note">どちらも同じ距離を振っています。違うのは「一番強い場所」がどこにあるかだけ。ボールがいるのは前面です。</p>
+
+  <div class="sig"><b>体修塾BCA｜新潟県・柏崎の野球個別指導スクール</b><br>代表 大林智也｜日体大 体育学 ／ 上越教育大学院 スポーツ心理学修士<br>📍 新潟県柏崎市｜新潟県全域・出張指導対応</div>
+</div>
+
+<script>
+(function(){
+  const NS='http://www.w3.org/2000/svg';
+  const W=440,H=400;
+  // 打者の中心（手の位置＝バットの支点）
+  const P={x:190,y:205};
+  const BAT=118;           // バットの長さ(px)
+  const START=135, END=-135; // ヘッド角度（度）: 下左(捕手側後面) → 右(前面) → 上左(投手側後面)
+  const SWEEP=START-END;   // 270°
+
+  function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);(parent||null)&&parent.appendChild(e);return e;}
+  function txt(x,y,s,attrs,parent){const t=el('text',Object.assign({x,y,'font-family':'inherit'},attrs),parent);t.textContent=s;return t;}
+
+  function buildScene(svg){
+    svg.innerHTML='';
+    // ゾーン
+    const bx=P.x; // 前後の境界線 x
+    // トップハンド後面（捕手側=下）
+    el('rect',{x:30,y:P.y,width:bx-30,height:H-60-P.y,rx:6,fill:'rgba(125,211,252,.16)',stroke:'#7dd3fc','stroke-width':1,'stroke-opacity':.6},svg);
+    // ボトムハンド後面（投手側=上）
+    el('rect',{x:30,y:40,width:bx-30,height:P.y-40,rx:6,fill:'rgba(252,129,129,.14)',stroke:'#fc8181','stroke-width':1,'stroke-opacity':.6},svg);
+    // 前面
+    el('rect',{x:bx+4,y:40,width:W-30-bx-4,height:H-60-40,rx:6,fill:'rgba(246,201,14,.12)',stroke:'#f6c90e','stroke-width':1,'stroke-opacity':.6},svg);
+    // ラベル
+    txt(bx/2+15,P.y+28,'トップハンド後面',{'text-anchor':'middle','font-size':12,'font-weight':700,fill:'#7dd3fc'},svg);
+    txt(bx/2+15,P.y+46,'溜める',{'text-anchor':'middle','font-size':11,fill:'#7dd3fc',opacity:.8},svg);
+    txt(bx/2+15,62,'ボトムハンド後面',{'text-anchor':'middle','font-size':12,'font-weight':700,fill:'#fc8181'},svg);
+    txt(bx/2+15,80,'抜ける',{'text-anchor':'middle','font-size':11,fill:'#fc8181',opacity:.8},svg);
+    txt((bx+W-30)/2+2,62,'前面',{'text-anchor':'middle','font-size':13,'font-weight':900,fill:'#f6c90e'},svg);
+    txt((bx+W-30)/2+2,80,'ボールが通る',{'text-anchor':'middle','font-size':11,fill:'#f6c90e',opacity:.85},svg);
+    // 投手・捕手
+    txt(W/2,26,'▲ 投手方向',{'text-anchor':'middle','font-size':11,fill:'#94a3b8'},svg);
+    txt(W/2,H-34,'▼ 捕手方向',{'text-anchor':'middle','font-size':11,fill:'#94a3b8'},svg);
+    // 固定線（前後）
+    el('line',{x1:bx+2,y1:40,x2:bx+2,y2:H-60,stroke:'#f8fafc','stroke-width':1.5,'stroke-dasharray':'6 4',opacity:.7},svg);
+    // ホームベース
+    el('path',{d:`M340 190 L380 190 L380 218 L360 236 L340 218 Z`,fill:'#1e293b',stroke:'#e2e8f0','stroke-width':1.5},svg);
+    txt(360,254,'ベース',{'text-anchor':'middle','font-size':10,fill:'#94a3b8'},svg);
+    // 軌跡グループ（あとから描く）
+    const trail=el('g',{id:'trail'},svg);
+    // 打者（肩のライン＋頭）
+    el('line',{x1:P.x-4,y1:P.y-58,x2:P.x-4,y2:P.y+58,stroke:'#f8fafc','stroke-width':7,'stroke-linecap':'round',opacity:.9},svg);
+    el('circle',{cx:P.x-4,cy:P.y,r:13,fill:'#111827',stroke:'#f8fafc','stroke-width':2},svg);
+    // バット
+    const bat=el('line',{x1:P.x,y1:P.y,x2:P.x,y2:P.y,stroke:'#f8fafc','stroke-width':4,'stroke-linecap':'round'},svg);
+    const head=el('circle',{cx:P.x,cy:P.y,r:6,fill:'#f6c90e'},svg);
+    const glow=el('circle',{cx:P.x,cy:P.y,r:10,fill:'#f6c90e',opacity:.25},svg);
+    svg.appendChild(bat);svg.appendChild(glow);svg.appendChild(head);
+    return {bat,head,glow,trail};
+  }
+
+  // 速度プロファイル：角度の進行率 p(0→1) に対する「勢い」(0→1)
+  // p=0 トップハンド後面の奥 / p≈0.5 前面の真ん中（ベース正面） / p=1 ボトムハンド後面の奥
+  // 従来型：捉えたあとも加速、ピークはボトムハンド後面（p≈0.86）
+  function vOld(p){ return Math.max(0.07, Math.exp(-Math.pow((p-0.86)/0.30,2))); }
+  // 体修塾：トップハンド後面から加速、前面（p≈0.5）でピーク、その後は惰性で減速
+  function vNew(p){ return Math.max(0.06, Math.exp(-Math.pow((p-0.5)/0.20,2))); }
+
+  // 速度→色
+  function col(v){ // 0:青 → .5:金 → 1:赤
+    const a=[100,116,139],b=[246,201,14],c=[255,255,255];
+    let r,g,bl;
+    if(v<0.5){const t=v/0.5;r=a[0]+(b[0]-a[0])*t;g=a[1]+(b[1]-a[1])*t;bl=a[2]+(b[2]-a[2])*t;}
+    else{const t=(v-0.5)/0.5;r=b[0]+(c[0]-b[0])*t;g=b[1]+(c[1]-b[1])*t;bl=b[2]+(c[2]-b[2])*t;}
+    return `rgb(${r|0},${g|0},${bl|0})`;
+  }
+  function zoneOf(deg){ // ヘッド角度から現在ゾーン
+    if(deg>90) return 'トップハンド後面';
+    if(deg>=-90) return '前面';
+    return 'ボトムハンド後面';
+  }
+
+  // 時間積分：dθ/dt = v(θ)。角度ごとの所要時間を積み上げ、全体を1に正規化する
+  function makeTable(vf){
+    const N=600;let t=[0];
+    for(let i=1;i<=N;i++){const p=(i-0.5)/N;t.push(t[i-1]+1/vf(p));}
+    const T=t[N];
+    return t.map(x=>x/T); // t[i] = 角度進行率 i/N に到達する時刻(0..1)
+  }
+  function progAt(tbl,u){ // 時刻u → 角度進行率p
+    let lo=0,hi=tbl.length-1;
+    while(lo<hi){const m=(lo+hi)>>1; if(tbl[m]<u) lo=m+1; else hi=m;}
+    return lo/(tbl.length-1);
+  }
+
+  const A={svg:document.getElementById('svgA'),vf:vOld,g:document.getElementById('gA'),w:document.getElementById('wA'),pk:document.getElementById('pkA')};
+  const B={svg:document.getElementById('svgB'),vf:vNew,g:document.getElementById('gB'),w:document.getElementById('wB'),pk:document.getElementById('pkB')};
+  [A,B].forEach(o=>{o.parts=buildScene(o.svg);o.tbl=makeTable(o.vf);o.peakZone=null;});
+
+  // ピークゾーンを事前計算
+  [A,B].forEach(o=>{let best=0,bp=0;for(let i=0;i<=600;i++){const v=o.vf(i/600);if(v>best){best=v;bp=i/600;}}
+    o.peakZone=zoneOf(START-SWEEP*bp);});
+
+  let DUR=2600, t0=null, slow=false, raf=null;
+  function frame(ts){
+    if(t0===null)t0=ts;
+    const dur=slow?DUR*2.6:DUR;
+    let t=(ts-t0)/dur; // 0..1（+余韻）
+    const u=Math.min(1,t);
+    [A,B].forEach(o=>{
+      const prog=progAt(o.tbl,u);
+      const idx=Math.round(prog*600);
+      const deg=START-SWEEP*prog;
+      const rad=deg*Math.PI/180;
+      const hx=P.x+BAT*Math.cos(rad), hy=P.y+BAT*Math.sin(rad);
+      const v=o.vf(prog);
+      o.parts.bat.setAttribute('x2',hx);o.parts.bat.setAttribute('y2',hy);
+      o.parts.bat.setAttribute('stroke-width',3+v*5);
+      o.parts.head.setAttribute('cx',hx);o.parts.head.setAttribute('cy',hy);o.parts.head.setAttribute('r',5+v*6);o.parts.head.setAttribute('fill',col(v));
+      o.parts.glow.setAttribute('cx',hx);o.parts.glow.setAttribute('cy',hy);o.parts.glow.setAttribute('r',8+v*22);o.parts.glow.setAttribute('fill',col(v));o.parts.glow.setAttribute('opacity',0.1+v*0.3);
+      // 軌跡（速いほど太く濃く）
+      if(u<1){const d=el('circle',{cx:hx,cy:hy,r:1.5+v*4,fill:col(v),opacity:0.25+v*0.55},o.parts.trail);}
+      o.g.style.width=(v*100)+'%';
+      const z=zoneOf(deg);
+      o.w.innerHTML = u<1
+        ? `いまヘッドは <b>${z}</b>`
+        : `力のピークは <b>${o.peakZone}</b> にありました。`;
+      o.pk.textContent = u<1 ? '' : (o===A ? 'ボールがいない場所で最大' : 'ボールがいる場所で最大');
+    });
+    if(t<1.9){raf=requestAnimationFrame(frame);}else{raf=null;}
+  }
+  function play(){if(raf)cancelAnimationFrame(raf);[A,B].forEach(o=>{o.parts.trail.innerHTML='';});t0=null;raf=requestAnimationFrame(frame);}
+  document.getElementById('btnPlay').addEventListener('click',()=>{slow=false;play();});
+  document.getElementById('btnSlow').addEventListener('click',()=>{slow=true;play();});
+  // 自動ループ
+  setInterval(()=>{if(!raf)play();},600);
+  play();
+})();
+</script>
+</body>
+</html>
