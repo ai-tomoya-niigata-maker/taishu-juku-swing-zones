@@ -203,6 +203,28 @@
   function play(){if(raf)cancelAnimationFrame(raf);[A,B].forEach(o=>{o.parts.trail.innerHTML='';});t0=null;raf=requestAnimationFrame(frame);}
   document.getElementById('btnPlay').addEventListener('click',()=>{slow=false;play();});
   document.getElementById('btnSlow').addEventListener('click',()=>{slow=true;play();});
+  // ?still=1 なら最終状態を静止画として描く（プレビュー画像用）
+  if(/[?&]still=1/.test(location.search)){
+    [A,B].forEach(o=>{
+      o.parts.trail.innerHTML='';
+      for(let i=0;i<=600;i+=3){
+        const prog=i/600, deg=o.start-o.sweep*prog, rad=deg*Math.PI/180;
+        const hx=P.x+BAT*Math.cos(rad), hy=P.y+BAT*Math.sin(rad), v=o.vf(prog);
+        el('circle',{cx:hx,cy:hy,r:1.5+v*4,fill:col(v),opacity:0.25+v*0.55},o.parts.trail);
+      }
+      // ピーク位置にバットを置く
+      let best=0,bp=0;for(let i=0;i<=600;i++){const v=o.vf(i/600);if(v>best){best=v;bp=i/600;}}
+      const deg=o.start-o.sweep*bp, rad=deg*Math.PI/180, hx=P.x+BAT*Math.cos(rad), hy=P.y+BAT*Math.sin(rad);
+      o.parts.bat.setAttribute('x2',hx);o.parts.bat.setAttribute('y2',hy);o.parts.bat.setAttribute('stroke-width',8);
+      o.parts.head.setAttribute('cx',hx);o.parts.head.setAttribute('cy',hy);o.parts.head.setAttribute('r',11);o.parts.head.setAttribute('fill',col(1));
+      o.parts.glow.setAttribute('cx',hx);o.parts.glow.setAttribute('cy',hy);o.parts.glow.setAttribute('r',30);o.parts.glow.setAttribute('fill',col(1));o.parts.glow.setAttribute('opacity',0.4);
+      o.g.style.width='100%';
+      o.w.innerHTML=`力のピークは <b>${o.peakZone}</b>`;
+      o.pk.textContent=(o===A?'ボールがいない場所で最大':'ボールがいる場所で最大');
+    });
+    document.querySelector('.ctrl').style.display='none';
+    return;
+  }
   // 自動ループ
   setInterval(()=>{if(!raf)play();},600);
   play();
