@@ -435,7 +435,7 @@
     const grid=new T.GridHelper(4,8,0x1e3a5f,0x1e3a5f); grid.position.y=0.001; scene.add(grid);
     // 前面（+z）にベース
     const plateShape=new T.Shape(); plateShape.moveTo(-.22,.22); plateShape.lineTo(.22,.22); plateShape.lineTo(.22,0); plateShape.lineTo(0,-.2); plateShape.lineTo(-.22,0); plateShape.closePath();
-    const plate=new T.Mesh(new T.ShapeGeometry(plateShape),mat(0xe2e8f0)); plate.rotation.x=-Math.PI/2; plate.position.set(0.55,0.004,1.15); scene.add(plate);
+    const plate=new T.Mesh(new T.ShapeGeometry(plateShape),mat(0xe2e8f0)); plate.rotation.x=-Math.PI/2; plate.position.set(0.85,0.004,1.35); scene.add(plate);
 
     // 体：骨盤・胴・肩・頭（骨盤は 45° 回った状態＝体全体を y 軸で回して表現）
     const body=new T.Group(); scene.add(body);
@@ -454,11 +454,11 @@
     const sl=new T.Line(new T.BufferGeometry().setFromPoints([new T.Vector3(-1.2,1.62,0),new T.Vector3(1.6,1.62,0)]),new T.LineDashedMaterial({color:WHITE,dashSize:.06,gapSize:.06,transparent:true,opacity:.5})); sl.computeLineDistances(); body.add(sl);
     // ラベル用スプライト
     function label(text,color,pos,scale){const c=document.createElement('canvas');c.width=256;c.height=64;const x=c.getContext('2d');x.font='bold 30px sans-serif';x.fillStyle=color;x.textAlign='center';x.fillText(text,128,42);const t=new T.CanvasTexture(c);const sp=new T.Sprite(new T.SpriteMaterial({map:t,transparent:true}));sp.scale.set(scale||.6,(scale||.6)/4,1);sp.position.copy(pos);return sp;}
-    body.add(label('へそライン','#f6c90e',new T.Vector3(0,1.32,1.45),.7));
+    body.add(label('へそライン','#f6c90e',new T.Vector3(0.4,1.28,1.5),.7));
     body.add(label('肩ラインの延長','#f8fafc',new T.Vector3(1.35,1.72,0),.8));
-    body.add(label('トップハンド側','#7dd3fc',new T.Vector3(0.95,0.25,1.2),.8));
+    body.add(label('トップハンド側','#7dd3fc',new T.Vector3(1.25,0.25,0.7),.8));
     body.add(label('ボトムハンド側','#fc8181',new T.Vector3(-0.95,0.25,1.2),.8));
-    scene.add(label('前面（ベース側）','#f6c90e',new T.Vector3(0.55,0.1,1.6),.9));
+    scene.add(label('前面（ベース側）','#f6c90e',new T.Vector3(0.85,0.1,1.75),.9));
     // 体全体を「完全着地後・骨盤が向いた状態」に：ここでは体の向き＝前面方向で固定し、打席の線は体の向きと同じに置く（視覚を単純化）
 
     // 腕（肩→グリップ）とバット
