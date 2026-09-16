@@ -83,7 +83,7 @@
   const W=440,H=400;
   // 打者の中心（手の位置＝バットの支点）
   const P={x:190,y:205};
-  const BAT=118;           // バットの長さ(px)
+  const BAT=135;           // バットの長さ(px)：ヘッドの弧がベース上を通る長さ
   const END=-135;          // 終点：上左(ボトムハンド後面の奥)
   // 始点は型ごとに違う。従来型はトップハンド後面をほぼ通らない（境界90°のすぐ手前から）、体修塾は奥から溜める
   const START_OLD=100, START_NEW=150;
@@ -106,16 +106,16 @@
     txt(bx/2+15,P.y+46,'溜める',{'text-anchor':'middle','font-size':11,fill:'#7dd3fc',opacity:.8},svg);
     txt(bx/2+15,62,'ボトムハンド後面',{'text-anchor':'middle','font-size':12,'font-weight':700,fill:'#fc8181'},svg);
     txt(bx/2+15,80,'抜ける',{'text-anchor':'middle','font-size':11,fill:'#fc8181',opacity:.8},svg);
-    txt((bx+W-30)/2+2,62,'前面',{'text-anchor':'middle','font-size':13,'font-weight':900,fill:'#f6c90e'},svg);
-    txt((bx+W-30)/2+2,80,'ボールが通る',{'text-anchor':'middle','font-size':11,fill:'#f6c90e',opacity:.85},svg);
+    txt(bx+150,62,'前面',{'text-anchor':'middle','font-size':13,'font-weight':900,fill:'#f6c90e'},svg);
+    txt(bx+150,80,'ボールが通る',{'text-anchor':'middle','font-size':11,fill:'#f6c90e',opacity:.85},svg);
     // 投手・捕手
     txt(W/2,26,'▲ 投手方向',{'text-anchor':'middle','font-size':11,fill:'#94a3b8'},svg);
     txt(W/2,H-34,'▼ 捕手方向',{'text-anchor':'middle','font-size':11,fill:'#94a3b8'},svg);
     // 固定線（前後）
     el('line',{x1:bx+2,y1:40,x2:bx+2,y2:H-60,stroke:'#f8fafc','stroke-width':1.5,'stroke-dasharray':'6 4',opacity:.7},svg);
     // ホームベース
-    el('path',{d:`M340 190 L380 190 L380 218 L360 236 L340 218 Z`,fill:'#1e293b',stroke:'#e2e8f0','stroke-width':1.5},svg);
-    txt(360,254,'ベース',{'text-anchor':'middle','font-size':10,fill:'#94a3b8'},svg);
+    el('path',{d:`M305 186 L345 186 L345 214 L325 232 L305 214 Z`,fill:'#1e293b',stroke:'#e2e8f0','stroke-width':1.5},svg);
+    txt(325,250,'ベース',{'text-anchor':'middle','font-size':10,fill:'#94a3b8'},svg);
     // 軌跡グループ（あとから描く）
     const trail=el('g',{id:'trail'},svg);
     // 打者（肩のライン＋頭）
