@@ -152,7 +152,7 @@
       </div>
       <p class="where" id="w3d"></p>
     </div>
-    <p class="note">金の線はおへそから前へ引いた「へそライン」。白い破線は両肩のラインの延長。バットは、この2本との関係で局面が決まります。</p>
+    <p class="note">青＝トップハンド後面（構え〜スイングバック、肩ラインまで）。金＝前面（肩ライン〜へそライン、スイングアウト〜スイングフロント）。バットは、この2本の線との関係で局面が決まります。</p>
   </div>
 
   <div class="sig"><b>体修塾BCA｜新潟県・柏崎の野球個別指導スクール</b><br>代表 大林智也｜日体大 体育学 ／ 上越教育大学院 スポーツ心理学修士<br>📍 新潟県柏崎市｜新潟県全域・出張指導対応</div>
@@ -435,6 +435,13 @@
     const MX=-1; // x 反転（右打者）
     const floor=new T.Mesh(new T.PlaneGeometry(4,4),mat(0x111827,.9)); floor.rotation.x=-Math.PI/2; scene.add(floor);
     const grid=new T.GridHelper(4,8,0x1e3a5f,0x1e3a5f); grid.position.y=0.001; scene.add(grid);
+    // ゾーン（床）：トップハンド後面＝肩ラインより後ろ・トップハンド側／前面＝肩ラインからへそラインまで・トップハンド側
+    const zoneMat=(c,o)=>new T.MeshBasicMaterial({color:c,transparent:true,opacity:o,side:T.DoubleSide,depthWrite:false});
+    const zBack=new T.Mesh(new T.PlaneGeometry(1.8,1.8),zoneMat(BLUE,.16)); zBack.rotation.x=-Math.PI/2; zBack.position.set(MX*0.9,0.004,-0.9); scene.add(zBack);
+    const zFront=new T.Mesh(new T.PlaneGeometry(1.8,1.8),zoneMat(GOLD,.16)); zFront.rotation.x=-Math.PI/2; zFront.position.set(MX*0.9,0.004,0.9); scene.add(zFront);
+    // ゾーンの境界線（床）：肩ライン（z=0）とへそライン（x=0）
+    const zl1=new T.Line(new T.BufferGeometry().setFromPoints([new T.Vector3(MX*1.8,0.006,0),new T.Vector3(0,0.006,0)]),new T.LineDashedMaterial({color:WHITE,dashSize:.08,gapSize:.06,transparent:true,opacity:.6})); zl1.computeLineDistances(); scene.add(zl1);
+    const zl2=new T.Line(new T.BufferGeometry().setFromPoints([new T.Vector3(0,0.006,-1.8),new T.Vector3(0,0.006,1.8)]),new T.LineDashedMaterial({color:GOLD,dashSize:.08,gapSize:.06,transparent:true,opacity:.7})); zl2.computeLineDistances(); scene.add(zl2);
     // 前面（+z）にベース
 
     // 体：骨盤・胴・肩・頭（骨盤は 45° 回った状態＝体全体を y 軸で回して表現）
@@ -455,10 +462,9 @@
     // ラベル用スプライト
     function label(text,color,pos,scale){const c=document.createElement('canvas');c.width=256;c.height=64;const x=c.getContext('2d');x.font='bold 30px sans-serif';x.fillStyle=color;x.textAlign='center';x.fillText(text,128,42);const t=new T.CanvasTexture(c);const sp=new T.Sprite(new T.SpriteMaterial({map:t,transparent:true}));sp.scale.set(scale||.6,(scale||.6)/4,1);sp.position.copy(pos);return sp;}
     body.add(label('へそライン','#f6c90e',new T.Vector3(MX*0.4,1.28,1.5),.7));
+    scene.add(label('トップハンド後面','#7dd3fc',new T.Vector3(MX*1.0,0.12,-1.35),.95));
+    scene.add(label('前面','#f6c90e',new T.Vector3(MX*1.0,0.12,1.35),.7));
     body.add(label('肩ラインの延長','#f8fafc',new T.Vector3(MX*1.35,1.72,0),.8));
-    body.add(label('トップハンド側','#7dd3fc',new T.Vector3(MX*1.25,0.25,0.7),.8));
-    body.add(label('ボトムハンド側','#fc8181',new T.Vector3(MX*-0.95,0.25,1.2),.8));
-    scene.add(label('前面','#f6c90e',new T.Vector3(0,0.1,1.75),.7));
     // 体全体を「完全着地後・骨盤が向いた状態」に：ここでは体の向き＝前面方向で固定し、打席の線は体の向きと同じに置く（視覚を単純化）
 
     // 腕（肩→グリップ）とバット
@@ -477,11 +483,11 @@
       {name:'構え',tag:'PHASE 0',grip:new T.Vector3(MX*0.22,1.40,-0.05),dir:new T.Vector3(MX*0.15,1,-0.30),
        text:'ヘッドはグリップの<b>上</b>にあります。バットは立っていて、まだどの線とも関係を持っていません。'},
       {name:'スイングバック',tag:'PHASE 1',grip:new T.Vector3(MX*0.10,1.50,-0.12),dir:new T.Vector3(MX*0.10,0.02,-1),
-       text:'ヘッドが<b>肩のラインの高さまで落ち</b>、バットは肩ラインに対して<b>ほぼ垂直</b>に、真後ろを向きます。グリップはへそラインの近くに残ります。トップハンド後面で溜める局面です。'},
+       text:'ヘッドが<b>肩のラインの高さまで落ち</b>、バットは肩ラインに対して<b>ほぼ垂直</b>に、真後ろを向きます。グリップはへそラインの近くに残ります。構えからここまでが<b>トップハンド後面</b>で溜める局面です。'},
       {name:'スイングアウト',tag:'PHASE 2',grip:new T.Vector3(MX*0.36,1.42,0.05),dir:new T.Vector3(MX*1,0,0),
-       text:'バットが<b>両肩のラインの延長線上に、平行に並びます</b>。ヘッドは肩の外へ。ここが練習での理想のインパクト位置です。'},
+       text:'バットが<b>両肩のラインの延長線上に、平行に並びます</b>。ヘッドは肩の外へ。肩ラインが、トップハンド後面と<b>前面</b>の境界です。ここが練習での理想のインパクト位置です。'},
       {name:'スイングフロント',tag:'PHASE 3',grip:new T.Vector3(MX*0.12,1.15,0.30),dir:new T.Vector3(MX*0.55,-0.15,0.85),
-       text:'ヘッドが肩ラインから<b>おへその前</b>まで来ます。前面でボールを捉える局面。ヘッドはまだへそラインの<b>トップハンド側</b>です。ここを越えるのはフォローだけ。'},
+       text:'ヘッドが肩ラインから<b>おへその前</b>まで来ます。肩ラインからへそラインまでが<b>前面</b>。ここでボールを捉えます。へそラインを越えるのはフォローだけです。'},
     ];
     K.forEach(k=>k.dir.normalize());
     let cur={grip:K[0].grip.clone(),dir:K[0].dir.clone()};
