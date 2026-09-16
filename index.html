@@ -32,6 +32,11 @@
   .legend span{display:inline-flex;align-items:center;gap:6px}
   .legend i{display:inline-block;width:14px;height:14px;border-radius:3px}
   .note{font-size:12px;color:var(--gray);line-height:1.8;text-align:center;margin:26px auto 0;max-width:600px}
+  .sec{margin-top:56px;padding-top:40px;border-top:1px solid var(--line)}
+  .card.one{max-width:560px;margin:0 auto}
+  .pctrl{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 16px 0}
+  .pctrl button{background:#1e293b;color:var(--white);border:1px solid var(--line);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer}
+  .pctrl button.on{border-color:var(--gold);color:var(--gold)}
   .sig{text-align:center;font-size:11px;color:var(--gray);margin-top:36px;line-height:1.9}
   .sig b{color:var(--white)}
 </style>
@@ -73,6 +78,25 @@
     <span><i style="background:rgba(252,129,129,.28);border:1px solid #fc8181"></i>ボトムハンド後面＝抜ける</span>
   </div>
   <p class="note">違うのは「どこで溜めて、どこで一番強いか」。従来型はトップハンド後面をほぼ使わず、ボールが通り過ぎたあとに最大になります。ボールがいるのは前面です。</p>
+
+  <div class="sec">
+    <p class="label">PELVIS ROTATION</p>
+    <h1>下半身の回旋は、骨盤の向きで決める。</h1>
+    <p class="lead">構えたときの骨盤の向きを0°とします。投手方向へ45°以上、最大90°まで向くこと。これが「下半身を回旋させる打ち方」の条件です。ボタンで角度を変えて、範囲の意味を確かめてください。</p>
+    <div class="card one">
+      <div class="band" style="background:#f6c90e"></div>
+      <svg id="svgP" viewBox="0 0 440 420"></svg>
+      <div class="pctrl">
+        <button data-deg="20">回さない打者（20°）</button>
+        <button data-deg="45">45°</button>
+        <button data-deg="70" class="on">70°</button>
+        <button data-deg="90">90°</button>
+        <button data-deg="115">回しすぎ（115°）</button>
+      </div>
+      <p class="where" id="wP"></p>
+    </div>
+    <p class="note">45〜90°は「最後は90°まで回せ」という目標ではなく、許容範囲です。この中のどこで打つかは、選手の体と立ち位置で決まります。</p>
+  </div>
 
   <div class="sig"><b>体修塾BCA｜新潟県・柏崎の野球個別指導スクール</b><br>代表 大林智也｜日体大 体育学 ／ 上越教育大学院 スポーツ心理学修士<br>📍 新潟県柏崎市｜新潟県全域・出張指導対応</div>
 </div>
@@ -203,6 +227,73 @@
   function play(){if(raf)cancelAnimationFrame(raf);[A,B].forEach(o=>{o.parts.trail.innerHTML='';});t0=null;raf=requestAnimationFrame(frame);}
   document.getElementById('btnPlay').addEventListener('click',()=>{slow=false;play();});
   document.getElementById('btnSlow').addEventListener('click',()=>{slow=true;play();});
+  // ===== 骨盤の回旋の図 =====
+  (function(){
+    const svg=document.getElementById('svgP'); if(!svg) return;
+    const C={x:200,y:230}, R=120;
+    const rad=d=>-d*Math.PI/180; // 投手方向(上)へ回る＝画面上では反時計回り
+    const pt=(d,r)=>({x:C.x+r*Math.cos(rad(d)), y:C.y+r*Math.sin(rad(d))});
+    function sector(d0,d1,r,attrs){const a=pt(d0,r),b=pt(d1,r);const large=(d1-d0)>180?1:0;
+      return el('path',Object.assign({d:`M${C.x} ${C.y} L${a.x} ${a.y} A${r} ${r} 0 ${large} 0 ${b.x} ${b.y} Z`},attrs),svg);}
+    // 方向ラベル
+    txt(220,24,'▲ 投手方向',{'text-anchor':'middle','font-size':11,fill:'#94a3b8'},svg);
+    txt(220,412,'▼ 捕手方向',{'text-anchor':'middle','font-size':11,fill:'#94a3b8'},svg);
+    // ベース（腹側＝右）
+    el('path',{d:'M372 206 L412 206 L412 234 L392 252 L372 234 Z',fill:'#1e293b',stroke:'#e2e8f0','stroke-width':1.5},svg);
+    txt(392,270,'ベース',{'text-anchor':'middle','font-size':10,fill:'#94a3b8'},svg);
+    // 扇形：0-45 不足 / 45-90 条件 / 90-130 回しすぎ
+    sector(0,45,R,{fill:'rgba(246,201,14,.10)',stroke:'#f6c90e','stroke-width':1,'stroke-opacity':.35});
+    sector(45,90,R,{fill:'rgba(246,201,14,.32)',stroke:'#f6c90e','stroke-width':1.5});
+    sector(90,130,R,{fill:'rgba(252,129,129,.18)',stroke:'#fc8181','stroke-width':1,'stroke-opacity':.6});
+    // 角度の目盛線
+    [0,45,90].forEach(d=>{const a=pt(d,R+6),b=pt(d,R+18);el('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:'#f8fafc','stroke-width':1.5},svg);
+      const l=pt(d,R+34);txt(l.x,l.y+4,d+'°',{'text-anchor':'middle','font-size':12,'font-weight':700,fill:'#f8fafc'},svg);});
+    // 範囲ラベル
+    let l=pt(67,R+52);txt(l.x,l.y,'条件を満たす範囲',{'text-anchor':'middle','font-size':11,'font-weight':700,fill:'#f6c90e'},svg);
+    l=pt(22,R+34);txt(l.x+8,l.y+4,'回旋不足',{'text-anchor':'start','font-size':11,fill:'#f6c90e',opacity:.7},svg);
+    l=pt(112,R+30);txt(l.x-6,l.y+4,'回しすぎ',{'text-anchor':'end','font-size':11,fill:'#fc8181'},svg);
+    // 足（固定・薄く）：踏み込み足=投手側(上)、軸足=捕手側(下)
+    el('rect',{x:C.x-10,y:C.y-92,width:20,height:34,rx:8,fill:'#1e293b',stroke:'#94a3b8','stroke-width':1,opacity:.7},svg);
+    el('rect',{x:C.x-10,y:C.y+58,width:20,height:34,rx:8,fill:'#1e293b',stroke:'#94a3b8','stroke-width':1,opacity:.7},svg);
+    txt(C.x-18,C.y-70,'踏み込み足',{'text-anchor':'end','font-size':10,fill:'#94a3b8'},svg);
+    txt(C.x-18,C.y+80,'軸足',{'text-anchor':'end','font-size':10,fill:'#94a3b8'},svg);
+    // 骨盤（回る）
+    const g=el('g',{},svg);
+    el('ellipse',{cx:C.x,cy:C.y,rx:22,ry:40,fill:'#111827',stroke:'#f8fafc','stroke-width':3},g);
+    el('line',{x1:C.x,y1:C.y,x2:C.x+78,y2:C.y,stroke:'#f6c90e','stroke-width':4,'stroke-linecap':'round','marker-end':'url(#arrowP)'},g);
+    el('circle',{cx:C.x+22,cy:C.y,r:5,fill:'#f6c90e'},g);
+    const defs=el('defs',{},svg);
+    const mk=el('marker',{id:'arrowP',viewBox:'0 0 10 10',refX:'8',refY:'5',markerWidth:'5',markerHeight:'5',orient:'auto'},defs);
+    el('path',{d:'M1 1L9 5L1 9Z',fill:'#f6c90e'},mk);
+    const navel=txt(C.x+40,C.y-14,'おへそ',{'text-anchor':'middle','font-size':11,'font-weight':700,fill:'#f6c90e'},g);
+    // 角度表示
+    const degT=txt(C.x-70,C.y+14,'0°',{'text-anchor':'end','font-size':34,'font-weight':900,fill:'#f8fafc'},svg);
+    const wP=document.getElementById('wP');
+    let cur=0, target=70, raf2=null;
+    function verdict(d){
+      if(d<45) return `骨盤は <b>${Math.round(d)}°</b>。45°に届いていません。回旋する意思があるなら「回旋不足」、意図して回さない設計なら「回さない打者」です。`;
+      if(d<=90) return `骨盤は <b>${Math.round(d)}°</b>。条件を満たしています。この範囲の中なら、どの角度でも正解です。`;
+      return `骨盤は <b>${Math.round(d)}°</b>。90°を越えています。回りすぎると体が投手に正対し、前面でボールを捉える形が崩れます。`;
+    }
+    function draw(){
+      g.setAttribute('transform',`rotate(${-cur} ${C.x} ${C.y})`);
+      navel.setAttribute('transform',`rotate(${cur} ${C.x+40} ${C.y-14})`);
+      degT.textContent=Math.round(cur)+'°';
+      degT.setAttribute('fill', cur<45?'#f8fafc':(cur<=90?'#f6c90e':'#fc8181'));
+      wP.innerHTML=verdict(cur);
+    }
+    function step(){
+      const diff=target-cur; if(Math.abs(diff)<0.3){cur=target;draw();raf2=null;return;}
+      cur+=diff*0.08; draw(); raf2=requestAnimationFrame(step);
+    }
+    function go(d){target=d; if(!raf2) raf2=requestAnimationFrame(step);
+      document.querySelectorAll('.pctrl button').forEach(b=>b.classList.toggle('on',+b.dataset.deg===d));}
+    document.querySelectorAll('.pctrl button').forEach(b=>b.addEventListener('click',()=>go(+b.dataset.deg)));
+    draw();
+    // 最初は 0→70 のデモ
+    setTimeout(()=>go(70),900);
+  })();
+
   // ?still=1 なら最終状態を静止画として描く（プレビュー画像用）
   if(/[?&]still=1/.test(location.search)){
     [A,B].forEach(o=>{
