@@ -239,8 +239,8 @@
     txt(220,24,'▲ 投手方向',{'text-anchor':'middle','font-size':11,fill:'#94a3b8'},svg);
     txt(220,412,'▼ 捕手方向',{'text-anchor':'middle','font-size':11,fill:'#94a3b8'},svg);
     // ベース（腹側＝右）
-    el('path',{d:'M372 206 L412 206 L412 234 L392 252 L372 234 Z',fill:'#1e293b',stroke:'#e2e8f0','stroke-width':1.5},svg);
-    txt(392,270,'ベース',{'text-anchor':'middle','font-size':10,fill:'#94a3b8'},svg);
+    el('path',{d:'M372 300 L412 300 L412 328 L392 346 L372 328 Z',fill:'#1e293b',stroke:'#e2e8f0','stroke-width':1.5},svg);
+    txt(392,364,'ベース',{'text-anchor':'middle','font-size':10,fill:'#94a3b8'},svg);
     // 扇形：0-45 不足 / 45-90 条件 / 90-130 回しすぎ
     sector(0,45,R,{fill:'rgba(125,211,252,.20)',stroke:'#7dd3fc','stroke-width':1,'stroke-opacity':.7});
     sector(45,90,R,{fill:'rgba(246,201,14,.32)',stroke:'#f6c90e','stroke-width':1.5});
@@ -250,8 +250,9 @@
       const l=pt(d,R+34);txt(l.x,l.y+4,d+'°',{'text-anchor':'middle','font-size':12,'font-weight':700,fill:'#f8fafc'},svg);});
     // 範囲ラベル
     let l=pt(67,R+52);txt(l.x,l.y,'条件を満たす範囲',{'text-anchor':'middle','font-size':11,'font-weight':700,fill:'#f6c90e'},svg);
-    l=pt(22,R+34);txt(l.x+8,l.y+4,'アンダーローテーション',{'text-anchor':'start','font-size':11,'font-weight':700,fill:'#7dd3fc'},svg);
-    l=pt(16,R+34);txt(l.x+8,l.y+20,'（回転不足）',{'text-anchor':'start','font-size':11,fill:'#7dd3fc'},svg);
+    txt(362,C.y-40,'アンダー',{'text-anchor':'middle','font-size':11,'font-weight':700,fill:'#7dd3fc'},svg);
+    txt(362,C.y-25,'ローテーション',{'text-anchor':'middle','font-size':11,'font-weight':700,fill:'#7dd3fc'},svg);
+    txt(362,C.y-10,'（回転不足）',{'text-anchor':'middle','font-size':11,fill:'#7dd3fc'},svg);
     l=pt(112,R+30);txt(l.x-6,l.y+4,'回しすぎ',{'text-anchor':'end','font-size':11,fill:'#fc8181'},svg);
     // 足（固定・薄く）：踏み込み足=投手側(上)、軸足=捕手側(下)
     el('rect',{x:C.x-10,y:C.y-92,width:20,height:34,rx:8,fill:'#1e293b',stroke:'#94a3b8','stroke-width':1,opacity:.7},svg);
