@@ -47,7 +47,7 @@
     <div class="card">
       <div class="band" style="background:#e53e3e"></div>
       <h2>従来型｜「最後まで振り切れ」</h2>
-      <p class="sub">ボールを捉えたあとも加速し、力のピークがボトムハンド後面（もうボールがいない場所）にある。</p>
+      <p class="sub">トップハンド後面で溜めずに振り出し、ボールを捉えたあとも加速。力のピークはボトムハンド後面（もうボールがいない場所）。</p>
       <svg id="svgA" viewBox="0 0 440 400"></svg>
       <div class="gauge"><div class="t"><span>ヘッドの勢い</span><span id="pkA"></span></div><div class="bar"><div class="fill" id="gA"></div></div></div>
       <p class="where" id="wA"></p>
@@ -56,7 +56,7 @@
     <div class="card">
       <div class="band" style="background:#f6c90e"></div>
       <h2>体修塾｜「前面で完結する」</h2>
-      <p class="sub">トップハンド後面で溜め、前面で力を出し切る。ボトムハンド後面へは惰性で抜けていくだけ。</p>
+      <p class="sub">トップハンド後面にいる間に加速が始まり、前面で力を出し切る。ボトムハンド後面へは惰性で抜けていくだけ。</p>
       <svg id="svgB" viewBox="0 0 440 400"></svg>
       <div class="gauge"><div class="t"><span>ヘッドの勢い</span><span id="pkB"></span></div><div class="bar"><div class="fill" id="gB"></div></div></div>
       <p class="where" id="wB"></p>
@@ -72,7 +72,7 @@
     <span><i style="background:rgba(246,201,14,.28);border:1px solid #f6c90e"></i>前面＝振る（ボールが通る）</span>
     <span><i style="background:rgba(252,129,129,.28);border:1px solid #fc8181"></i>ボトムハンド後面＝抜ける</span>
   </div>
-  <p class="note">どちらも同じ距離を振っています。違うのは「一番強い場所」がどこにあるかだけ。ボールがいるのは前面です。</p>
+  <p class="note">違うのは「どこで溜めて、どこで一番強いか」。従来型はトップハンド後面をほぼ使わず、ボールが通り過ぎたあとに最大になります。ボールがいるのは前面です。</p>
 
   <div class="sig"><b>体修塾BCA｜新潟県・柏崎の野球個別指導スクール</b><br>代表 大林智也｜日体大 体育学 ／ 上越教育大学院 スポーツ心理学修士<br>📍 新潟県柏崎市｜新潟県全域・出張指導対応</div>
 </div>
@@ -84,8 +84,9 @@
   // 打者の中心（手の位置＝バットの支点）
   const P={x:190,y:205};
   const BAT=118;           // バットの長さ(px)
-  const START=135, END=-135; // ヘッド角度（度）: 下左(捕手側後面) → 右(前面) → 上左(投手側後面)
-  const SWEEP=START-END;   // 270°
+  const END=-135;          // 終点：上左(ボトムハンド後面の奥)
+  // 始点は型ごとに違う。従来型はトップハンド後面をほぼ通らない（境界90°のすぐ手前から）、体修塾は奥から溜める
+  const START_OLD=100, START_NEW=150;
 
   function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);(parent||null)&&parent.appendChild(e);return e;}
   function txt(x,y,s,attrs,parent){const t=el('text',Object.assign({x,y,'font-family':'inherit'},attrs),parent);t.textContent=s;return t;}
@@ -130,10 +131,10 @@
 
   // 速度プロファイル：角度の進行率 p(0→1) に対する「勢い」(0→1)
   // p=0 トップハンド後面の奥 / p≈0.5 前面の真ん中（ベース正面） / p=1 ボトムハンド後面の奥
-  // 従来型：捉えたあとも加速、ピークはボトムハンド後面（p≈0.86）
-  function vOld(p){ return Math.max(0.07, Math.exp(-Math.pow((p-0.86)/0.30,2))); }
-  // 体修塾：トップハンド後面から加速、前面（p≈0.5）でピーク、その後は惰性で減速
-  function vNew(p){ return Math.max(0.06, Math.exp(-Math.pow((p-0.5)/0.20,2))); }
+  // 従来型：ゆっくり出て、捉えたあとも加速。ピークはボトムハンド後面（p≈0.88）
+  function vOld(p){ return Math.max(0.07, Math.exp(-Math.pow((p-0.88)/0.30,2))); }
+  // 体修塾：トップハンド後面にいる間から加速を始め、前面（ベース正面の少し手前）でピーク、その後は惰性で減速
+  function vNew(p){ const c=0.42, sl=0.32, sr=0.20; const sg=p<c?sl:sr; return Math.max(0.06, Math.exp(-Math.pow((p-c)/sg,2))); }
 
   // 速度→色
   function col(v){ // 0:青 → .5:金 → 1:赤
@@ -162,13 +163,14 @@
     return lo/(tbl.length-1);
   }
 
-  const A={svg:document.getElementById('svgA'),vf:vOld,g:document.getElementById('gA'),w:document.getElementById('wA'),pk:document.getElementById('pkA')};
-  const B={svg:document.getElementById('svgB'),vf:vNew,g:document.getElementById('gB'),w:document.getElementById('wB'),pk:document.getElementById('pkB')};
+  const A={svg:document.getElementById('svgA'),vf:vOld,start:START_OLD,g:document.getElementById('gA'),w:document.getElementById('wA'),pk:document.getElementById('pkA')};
+  const B={svg:document.getElementById('svgB'),vf:vNew,start:START_NEW,g:document.getElementById('gB'),w:document.getElementById('wB'),pk:document.getElementById('pkB')};
+  [A,B].forEach(o=>{o.sweep=o.start-END;});
   [A,B].forEach(o=>{o.parts=buildScene(o.svg);o.tbl=makeTable(o.vf);o.peakZone=null;});
 
   // ピークゾーンを事前計算
   [A,B].forEach(o=>{let best=0,bp=0;for(let i=0;i<=600;i++){const v=o.vf(i/600);if(v>best){best=v;bp=i/600;}}
-    o.peakZone=zoneOf(START-SWEEP*bp);});
+    o.peakZone=zoneOf(o.start-o.sweep*bp);});
 
   let DUR=2600, t0=null, slow=false, raf=null;
   function frame(ts){
@@ -179,7 +181,7 @@
     [A,B].forEach(o=>{
       const prog=progAt(o.tbl,u);
       const idx=Math.round(prog*600);
-      const deg=START-SWEEP*prog;
+      const deg=o.start-o.sweep*prog;
       const rad=deg*Math.PI/180;
       const hx=P.x+BAT*Math.cos(rad), hy=P.y+BAT*Math.sin(rad);
       const v=o.vf(prog);
