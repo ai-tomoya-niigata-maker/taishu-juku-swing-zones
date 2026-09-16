@@ -48,6 +48,10 @@
   body.only-upper .wrap>.label, body.only-upper .wrap>h1, body.only-upper .wrap>.lead, body.only-upper .grid, body.only-upper .ctrl, body.only-upper .legend, body.only-upper .wrap>.note, body.only-upper #pelvis, body.only-upper #stance{display:none}
   body.only-upper #upper{margin-top:0;padding-top:24px;border-top:none}
   body.only-upper.still #phaseBtns, body.only-upper.still #viewBtns{display:none}
+  .figwrap{position:relative}
+  .wm{position:absolute;right:12px;bottom:10px;height:30px;opacity:.92;pointer-events:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.7))}
+  #three-wrap .wm{bottom:auto;top:12px;right:12px;height:34px}
+  .use{font-size:12px;color:#f6c90e;text-align:center;margin:10px auto 0;max-width:560px;line-height:1.7}
   .sig{text-align:center;font-size:11px;color:var(--gray);margin-top:36px;line-height:1.9}
   .sig b{color:var(--white)}
 </style>
@@ -57,6 +61,7 @@
   <p class="label">THE ESSENCE OF HITTING</p>
   <h1>スイングの力は、どこで使うのか。</h1>
   <p class="lead">打席を真上から見ています（右打者）。線は構えた瞬間に固定され、体が動いても動きません。バットヘッドの明るさと太さが「いま出ている力」です（灰→金→白の順に強い）。</p>
+  <p class="use">有料読者の方は、このページの図を、チームや教え子への指導の場でそのまま使っていただいて構いません。画面を見せながら説明する、練習前に一緒に見る、などご自由に。</p>
 
   <div class="grid">
     <!-- 従来型 -->
@@ -64,7 +69,7 @@
       <div class="band" style="background:#e53e3e"></div>
       <h2>従来型｜「最後まで振り切れ」</h2>
       <p class="sub">トップハンド後面で溜めずに振り出し、ボールを捉えたあとも加速。力のピークはボトムハンド後面（もうボールがいない場所）。</p>
-      <svg id="svgA" viewBox="0 0 440 400"></svg>
+      <div class="figwrap"><svg id="svgA" viewBox="0 0 440 400"></svg><img class="wm" src="logo-text.png" alt="体修塾BCA"></div>
       <div class="gauge"><div class="t"><span>ヘッドの勢い</span><span id="pkA"></span></div><div class="bar"><div class="fill" id="gA"></div></div></div>
       <p class="where" id="wA"></p>
     </div>
@@ -73,7 +78,7 @@
       <div class="band" style="background:#f6c90e"></div>
       <h2>体修塾｜「前面で完結する」</h2>
       <p class="sub">トップハンド後面にいる間に加速が始まり、前面で力を出し切る。ボトムハンド後面へは惰性で抜けていくだけ。</p>
-      <svg id="svgB" viewBox="0 0 440 400"></svg>
+      <div class="figwrap"><svg id="svgB" viewBox="0 0 440 400"></svg><img class="wm" src="logo-text.png" alt="体修塾BCA"></div>
       <div class="gauge"><div class="t"><span>ヘッドの勢い</span><span id="pkB"></span></div><div class="bar"><div class="fill" id="gB"></div></div></div>
       <p class="where" id="wB"></p>
     </div>
@@ -96,7 +101,7 @@
     <p class="lead">構えたときの骨盤の向きを0°とします。投手方向へ45°以上、最大90°まで向くこと。これが「下半身を回旋させる打ち方」の条件です。ボタンで角度を変えて、範囲の意味を確かめてください。</p>
     <div class="card one">
       <div class="band" style="background:#f6c90e"></div>
-      <svg id="svgP" viewBox="0 0 440 420"></svg>
+      <div class="figwrap"><svg id="svgP" viewBox="0 0 440 420"></svg><img class="wm" src="logo-text.png" alt="体修塾BCA"></div>
       <div class="pctrl">
         <button data-deg="20">アンダーローテーション（20°）</button>
         <button data-deg="45">45°</button>
@@ -115,7 +120,7 @@
     <p class="lead">45〜90°の中のどこで打つかは、選手が「決める」のではなく、立ち位置で「決まる」もの。ベースに近く立てば90°に近づき、離れて立てば45°に近づきます。スライダーで立ち位置を動かしてみてください。</p>
     <div class="card one">
       <div class="band" style="background:#f6c90e"></div>
-      <svg id="svgS" viewBox="0 0 440 420"></svg>
+      <div class="figwrap"><svg id="svgS" viewBox="0 0 440 420"></svg><img class="wm" src="logo-text.png" alt="体修塾BCA"></div>
       <div class="slider">
         <span>ベースに近い</span>
         <input type="range" id="rngS" min="0" max="100" value="50">
@@ -136,6 +141,7 @@
         <canvas id="cv3d" style="width:100%;height:100%;display:block"></canvas>
         <div id="phaseTag" style="position:absolute;left:14px;top:12px;font-size:12px;letter-spacing:.2em;color:#f6c90e;font-weight:700"></div>
         <div id="phaseName" style="position:absolute;left:14px;top:30px;font-size:20px;font-weight:900;color:#f8fafc"></div>
+        <img class="wm" src="logo-text.png" alt="体修塾BCA">
       </div>
       <div class="pctrl" id="phaseBtns">
         <button data-ph="0">構え</button>
@@ -155,6 +161,7 @@
     <p class="note">床の色は構えで固定された打席の線（金＝前面／青＝トップハンド後面／赤＝ボトムハンド後面）。体の線（へそライン・肩ラインの延長）は骨盤・上半身と一緒に回ります。バットが線を越えて前面に入るのではなく、下半身が先に回り、上半身が続くことでヘッドが前面へ運ばれます。</p>
   </div>
 
+  <p class="use">図の著作権は体修塾BCAにあります。有料読者の方の指導での使用は自由です。転載・再配布・パスワードの共有はご遠慮ください。</p>
   <div class="sig"><b>体修塾BCA｜新潟県・柏崎の野球個別指導スクール</b><br>代表 大林智也｜日体大 体育学 ／ 上越教育大学院 スポーツ心理学修士<br>📍 新潟県柏崎市｜新潟県全域・出張指導対応</div>
 </div>
 
